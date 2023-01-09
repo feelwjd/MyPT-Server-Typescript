@@ -7,6 +7,9 @@ const cryptos = require('crypto');
 const cors = require('cors');
 const dotenv = require('dotenv');
 const { sequelize } = require('./models');
+const fs = require('fs');
+const gm = require('gm').subClass({imageMagick: true});
+const multer = require('multer');
 dotenv.config();
 
 /* Router Setting */
@@ -18,6 +21,7 @@ const commuRouter = require('./routes/commu');
 const apiRouter = require('./routes/api');
 const shareimageRouter = require('./routes/shareimage');
 const sessionRouter = require('./routes/session');
+
 
 const app = express();
 const port = process.env.PORT || 8000;
@@ -31,7 +35,8 @@ sequelize.sync({alter: false, force: false})
     });
 
 const whitelist: Array<String> = [];
- 
+
+// CORS 설정
 const corsOptions = {
   origin: function (origin : any, callback : any) { 
     if (whitelist.indexOf(origin) !== -1) { // 만일 whitelist 배열에 origin인자가 있을 경우
@@ -55,13 +60,14 @@ app.use(session({
   }
 }));
 
-
+// setup
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser(process.env.COOKIE_SECRET));
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.static('public'));  
 
+// routes setup
 app.use('/images', express.static('images')); 
 app.use('/shareimage', express.static('shareimage')); 
 app.use('/users', usersRouter);
