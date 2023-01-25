@@ -85,6 +85,8 @@ UserDashBoard.init(
         tableName : 'userdashboard',
         sequelize,
         freezeTableName: true,
+        createdAt : false,
+        updatedAt : false
     }
 )
 

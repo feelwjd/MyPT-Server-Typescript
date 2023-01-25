@@ -150,7 +150,7 @@ User.init(
             unique: true
         },
         userpw : {
-            type: DataTypes.STRING(60),
+            type: DataTypes.STRING(64),
             allowNull: false
         },
         age : {

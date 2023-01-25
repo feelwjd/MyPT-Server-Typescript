@@ -58,6 +58,8 @@ RoutineDetail.init(
         tableName : 'routinedetail',
         sequelize,
         freezeTableName: true,
+        createdAt : false,
+        updatedAt : false
     }
 )
 

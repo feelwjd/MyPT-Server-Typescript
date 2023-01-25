@@ -77,7 +77,7 @@ Workout.init(
         },
         label : {
             type : DataTypes.INTEGER,
-            allowNull : false,
+            allowNull : true,
         }
     },
     {
@@ -85,5 +85,7 @@ Workout.init(
         tableName : 'workout',
         sequelize,
         freezeTableName: true,
+        createdAt : false,
+        updatedAt : false
     }
 )
