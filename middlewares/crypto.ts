@@ -31,3 +31,13 @@ export function decrypt(text: string) {
         console.log(e);
     }
 }
+
+export function sha256(password: string){
+    try{
+        const hash = crypto.createHash('sha256');
+        hash.update(password);
+        return hash.digest('hex');
+    }catch(e){
+        console.log(e);
+    }
+}
