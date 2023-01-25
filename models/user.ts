@@ -3,54 +3,69 @@ import { Sequelize, DataTypes, Model, Optional,
     HasManyCountAssociationsMixin, HasManyCreateAssociationMixin, Association  
 } from "sequelize";
 import {sequelize} from '.';
+import { Routine } from "./routine";
 
 interface UserAttributes {
-    user_id : string,
-    user_pw : string,
+    nickname : string,
+    userid : string,
+    userpw : string,
     age : number,
     address : string,
     name : string,
     sex : boolean,
+    height : number,
+    weight : number,
+    profileimage : string,
 }
 
 export class User extends Model<UserAttributes> {
     private readonly _id! : number;
-    private _user_id! : string;
-    private _user_pw! : string;
+    private _nickname! : string;
+    private _userid! : string;
+    private _userpw! : string;
     private _age! : number;
     private _address! : string;
     private _name! : string;
     private _sex! : boolean;
+    private _height! : number;
+    private _weight! : number;
+    private _profileimage! : string;
     private readonly _createdAt! : Date;
     private readonly _updatedAt! : Date;
+
+    public getRoutine!: HasManyGetAssociationsMixin<Routine>;
+    public addRoutine!: HasManyAddAssociationMixin<Routine, number>;
+    public hasRoutine!: HasManyHasAssociationMixin<Routine, number>;
+    public countRoutine!: HasManyCountAssociationsMixin;
+    public createRoutine!: HasManyCreateAssociationMixin<Routine>;
 
 
     get id(): number {
         return this._id;
     }
 
-    get user_id(): string {
-        return this._user_id;
+    get nickname(): string {
+        return this._nickname;
     }
 
-    set user_id(value: string) {
-        if (value == null || value == "") {
-            throw new Error('Id is Empty');
-        }else{
-            this._user_id = value;
-        }
+    set nickname(value: string) {
+        !!value ? this._nickname = value : new Error('Nickname is Empty');
     }
 
-    get user_pw(): string {
-        return this._user_pw;
+    get userid(): string {
+        return this._userid;
     }
 
-    set user_pw(value: string) {
-        if (value == null || value == "") {
-            throw new Error('Pw is Empty');
-        }else{
-            this._user_pw = value;
-        }
+    set userid(value: string) {
+        !!value ? this._userid = value : new Error('Id is Empty');
+    }
+
+    get userpw(): string {
+        return this._userpw;
+    }
+
+    set userpw(value: string) {
+        !!value ? this._userpw = value : new Error('Pw is Empty');
     }
 
     get age(): number {
@@ -58,11 +73,7 @@ export class User extends Model<UserAttributes> {
     }
 
     set age(value: number) {
-        if (value == null || value <= 0) {
-            throw new Error('Age is bigger than zero');
-        }else{
-            this._age = value;
-        }
+        !!value||value<=0 ? this._age = value : new Error('Age is bigger than zero');
     }
 
     get address(): string {
@@ -70,11 +81,7 @@ export class User extends Model<UserAttributes> {
     }
 
     set address(value: string) {
-        if (value == null || value == "") {
-            throw new Error('Adress is Empty');
-        }else{
-            this._address = value;
-        }
+        !!value ? this._address = value : new Error('Adress is Empty');
     }
 
     get name(): string {
@@ -82,11 +89,7 @@ export class User extends Model<UserAttributes> {
     }
 
     set name(value: string) {
-        if (value == null || value == "") {
-            throw new Error('Name is Empty');
-        }else{
-            this._name = value;
-        }
+        !!value ? this._name = value : new Error('Name is Empty');
     }
 
     get sex(): boolean {
@@ -94,11 +97,31 @@ export class User extends Model<UserAttributes> {
     }
 
     set sex(value: boolean){
-        if (value == null || value == undefined) {
-            throw new Error('Sex is Empty');
-        }else{
-            this._sex = value;
-        }
+        !!value ? this._sex = value : new Error('Sex is Empty');
+    }
+
+    get height(): number {
+        return this._height;
+    }
+    
+    set height(value: number) {
+        !!value||value<=0 ? this._height = value : new Error('Height is bigger than zero');
+    }
+
+    get weight(): number {
+        return this._weight;
+    }
+
+    set weight(value: number) {
+        !!value||value<=0 ? this._weight = value : new Error('Weight is bigger than zero');
+    }
+
+    get profileimage(): string {
+        return this._profileimage;
+    }
+
+    set profileimage(value: string) {
+        !!value ? this._profileimage = value : this._profileimage = 'profile/images/default.png';
     }
 
     get createdAt(): Date {
@@ -110,19 +133,23 @@ export class User extends Model<UserAttributes> {
     }
 
     public static associations: {
-        
+        userHasManyRoutine: Association<User, Routine>;
     };
     
 }
 
 User.init(
     {
-        user_id : {
+        nickname : {
+            type: DataTypes.STRING(20),
+            allowNull: true
+        },
+        userid : {
             type: DataTypes.STRING(30),
             allowNull: false,
             unique: true
         },
-        user_pw : {
+        userpw : {
             type: DataTypes.STRING(60),
             allowNull: false
         },
@@ -132,7 +159,7 @@ User.init(
         },
         address : {
             type: DataTypes.STRING(100),
-            allowNull: false
+            allowNull: true
         },
         name : {
             type: DataTypes.STRING(20),
@@ -141,11 +168,24 @@ User.init(
         sex : {
             type: DataTypes.BOOLEAN,
             allowNull: false
+        },
+        height : {
+            type: DataTypes.INTEGER,
+            allowNull: false
+        },
+        weight : {
+            type: DataTypes.INTEGER,
+            allowNull: false
+        },
+        profileimage : {
+            type: DataTypes.STRING(100),
+            allowNull: false,
+            defaultValue: 'profile/images/default.png'
         }
     },
     {
-        modelName : 'User',
-        tableName : 'User',
+        modelName : 'user',
+        tableName : 'user',
         sequelize,
         freezeTableName: true,
         timestamps : true,

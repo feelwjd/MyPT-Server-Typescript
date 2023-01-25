@@ -8,9 +8,9 @@ console.log("migration-all-table");
 const asyncExec = util.promisify(exec)      //!!!!!중요!!!
 
 console.log(`
-    ------------------------------------------------
-    +++Decentralize Personal Bank Migration Start+++
-    ------------------------------------------------
+    -----------------------------------------------
+    ++++MY Personal Training DB Migration Start++++
+    -----------------------------------------------
 `);
 
 
