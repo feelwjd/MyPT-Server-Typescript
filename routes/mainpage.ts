@@ -1,9 +1,9 @@
-const mainpageController = require('../controllers/mainpageController');
+import express from "express";
+import mainpageController from "../controller/mainpageController";
+const mainpageRouter = express.Router();
 
-mainpageController.post('/', mainpageController.main);
+mainpageRouter.post('/calender', mainpageController.calender);
 
-mainpageController.post('/calender', mainpageController.calender);
+mainpageRouter.post('/todolist', mainpageController.todolist);
 
-mainpageController.post('/todolist', mainpageController.todolist);
-
-module.exports = mainpageController;
+module.exports = mainpageRouter;

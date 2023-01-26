@@ -1,17 +1,15 @@
-const apiController = require('../controllers/apiController');
+import express from "express";
+import apiController from "../controller/apiController";
+const apiRouter = express.Router();
 
-apiController.post('/routine', apiController.routine);
+apiRouter.post('/users', apiController.users);
 
-apiController.post('/users', apiController.users);
+apiRouter.post('/userinfo', apiController.userinfo);
 
-apiController.post('/user', apiController.user);
+apiRouter.post('/workout', apiController.workout);
 
-apiController.post('/workout', apiController.workout);
+apiRouter.post('/routineinfo', apiController.routineinfo);
 
-apiController.post('/urw', apiController.urw);
+apiRouter.post('/routinerecommand', apiController.routinerecommand);
 
-apiController.post('/routineinfo', apiController.routineinfo);
-
-apiController.post('/routinerecommand', apiController.routinerecommand);
-
-module.exports = apiController;
+module.exports = apiRouter;

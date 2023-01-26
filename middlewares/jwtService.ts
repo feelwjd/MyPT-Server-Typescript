@@ -2,6 +2,7 @@ import { Request } from "express";
 import jwt from 'jsonwebtoken';
 import {User} from '../models/user';
 import { secretKey } from '../config/secretKey';
+const blacklist = require('express-jwt-blacklist');
 
 const TOKEN_EXPIRED = -3;
 const TOKEN_INVALID = -2;
@@ -37,4 +38,7 @@ export = {
       }
       return decoded;
     },
+    destroy : async (token: any) => {
+      blacklist.blacklist(token);
+    }
   };

@@ -1,13 +1,13 @@
-const funcController = require('../controllers/funcController');
+import express from "express";
+import funcController from "../controller/funcController";
+const funcRouter = express.Router();
 
-funcController.post('/calories', funcController.calories);
+funcRouter.post('/calories', funcController.calories);
 
-funcController.post('/createroutine', funcController.createroutine);
+funcRouter.post('/createroutine', funcController.createroutine);
 
-funcController.post('/updateroutine', funcController.updateroutine);
+funcRouter.post('/updateroutine', funcController.updateroutine);
 
-funcController.post('/deleteroutine', funcController.deleteroutine);
+funcRouter.post('/deleteroutine', funcController.deleteroutine);
 
-funcController.post('/picshare', funcController.picshare);
-
-module.exports = funcController;
+module.exports = funcRouter;

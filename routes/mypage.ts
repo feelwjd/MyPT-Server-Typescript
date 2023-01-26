@@ -1,7 +1,7 @@
-const mypageController = require('../controllers/mypageController');
+import express from "express";
+import mypageController from "../controller/mypageController";
+const mypageRouter = express.Router();
 
-mypageController.post('/beforeafter', mypageController.beforeafter);
+mypageRouter.post('/update', mypageController.update);
 
-mypageController.post('/beforeafterchange', mypageController.beforeafterchange);
-
-module.exports = mypageController;
+module.exports = mypageRouter;

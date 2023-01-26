@@ -27,6 +27,7 @@ export = {
                 }else{
                     //JWT 토큰 발급
                     const accessToken = jwtService.sign(user!);
+                    client.set(user!.userid, accessToken, 'EX', 60*60*2);
                     return res
                         .status(statusCode.OK)
                         .send(message.success(statusCode.OK, "로그인 성공", {isSigned: true, userdata: user, accessToken: accessToken}));
@@ -41,7 +42,7 @@ export = {
     },
     signup : async (req: Request, res: Response) => {
         const {nickname, userid, userpw, age, address, name, sex, height, weight, profileimage} = req.body;
-        if(!!nickname||!!userid||!!userpw||!!age||!!address||!!name||!!sex||!!height||!!weight||!!profileimage) {
+        if(!!nickname||!!userid||!!userpw||!!age||!!name||!!sex||!!height||!!weight) {
             return res
                 .status(statusCode.BAD_REQUEST)
                 .send(message.fail(statusCode.BAD_REQUEST, "입력되지 않은 정보가 있습니다."));
@@ -86,7 +87,34 @@ export = {
         }
     },
     signout : async (req: Request, res: Response) => {
-
+        const {userid} = req.body;
+        if(!!userid) {
+            return res
+                .status(statusCode.BAD_REQUEST)
+                .send(message.fail(statusCode.BAD_REQUEST, "잘못된 접근입니다."));
+        }else{
+            try{
+                // 로그아웃 처리
+                const jwt = client.get(userid);
+                jwtService.verify(jwt);
+                if(jwt){
+                    client.del(userid);
+                    jwtService.destroy(jwt);
+                    return res
+                        .status(statusCode.OK)
+                        .send(message.success(statusCode.OK, "로그아웃 성공", {isSigned: false}));
+                }else{
+                    return res
+                        .status(statusCode.NOT_FOUND)
+                        .send(message.fail(statusCode.NOT_FOUND, "로그인되어 있지 않습니다."));
+                }
+            }catch(err){
+                console.error(err);
+                return res
+                    .status(statusCode.INTERNAL_SERVER_ERROR)
+                    .send(message.fail(statusCode.INTERNAL_SERVER_ERROR, "서버 오류"));
+            }
+        }
     },
     signdelete : async (req: Request, res: Response) => {
 

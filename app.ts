@@ -10,6 +10,8 @@ const { sequelize } = require('./models');
 const fs = require('fs');
 const gm = require('gm').subClass({imageMagick: true});
 const multer = require('multer');
+const redis = require('redis');
+const redisStore = require('connect-redis')(session);
 dotenv.config();
 
 /* Router Setting */
@@ -34,7 +36,7 @@ sequelize.sync({alter: false, force: false})
         throw new Error(error);
     });
 
-const whitelist: Array<String> = [];
+const whitelist: Array<String> = ["*"];
 
 // CORS 설정
 const corsOptions = {
@@ -47,11 +49,25 @@ const corsOptions = {
   },
 };
  
-app.use(cors(corsOptions)); // 옵션을 추가한 CORS 미들웨어 추가
+//app.use(cors(corsOptions)); // 옵션을 추가한 CORS 미들웨어 추가
+app.use(cors()); // CORS 미들웨어 추가
 
-//Use Session
+// Redis Client
+const client = redis.createClient({ url: process.env.REDIS_HOST_URL });
+
+(async () => {
+    await client.connect();
+})();
+
+client.on('connect', () => console.log('::> ✅ Redis Client Connected'));
+client.on('error', (err:any) => console.log('<:: Redis Client Error', err));
+
+// Use Session with Redis
 app.use(session({
-  key: 'sid',
+  store: new redisStore({
+    client: client,
+    logErrors: true
+  }),
   secret: process.env.SESSION_SECRET,
   resave: false,
   saveUninitialized: true,

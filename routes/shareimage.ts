@@ -1,4 +1,7 @@
-const shareimageController = require('../controllers/shareimageController');
+import express from "express";
+import shareimageController from "../controller/shareimageController";
+const shareimageRouter = express.Router();
+const multer = require('multer');
 
 var storage = multer.diskStorage({
     destination: function (req: any, file: any, cb: any) {
@@ -10,6 +13,6 @@ var storage = multer.diskStorage({
 });
 var upload = multer({ storage: storage }).single('image');
 
-shareimageController.post('/image', upload, shareimageController.image);
+shareimageRouter.post('/image', upload, shareimageController.image);
 
-module.exports = shareimageController;
+module.exports = shareimageRouter;

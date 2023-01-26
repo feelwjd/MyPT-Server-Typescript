@@ -1,5 +1,7 @@
-const sessionController = require('../controllers/sessionController');
+import express from "express";
+import sessionController from "../controller/sessionController";
+const sessionRouter = express.Router();
 
-sessionController.post('/check', sessionController.check);
+sessionRouter.post('/check', sessionController.check);
 
-module.exports = sessionController;
+module.exports = sessionRouter;

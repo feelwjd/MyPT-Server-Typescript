@@ -1,9 +1,13 @@
-const commuController = require('../controllers/commuController');
+import express from "express";
+import commuController from "../controller/commuController";
+const commuRouter = express.Router();
 
-commuController.post('/share', commuController.share);
+commuRouter.post('/post', commuController.post);
 
-commuController.post('/heart', commuController.heart);
+commuRouter.post('/heart', commuController.heart);
 
-commuController.post('/community', commuController.community);
+commuRouter.post('/community', commuController.community);
 
-module.exports = commuController;
+commuRouter.post('/save', commuController.save);
+
+module.exports = commuRouter;

@@ -1,4 +1,6 @@
-const usersController = require('../controllers/usersController');
+import express from "express";
+import usersController from "../controller/usersController";
+const usersRouter = express.Router();
 
 usersRouter.post('/signin', usersController.signin);
 
