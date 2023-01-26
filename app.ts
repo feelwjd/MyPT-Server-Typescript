@@ -52,29 +52,19 @@ const corsOptions = {
 //app.use(cors(corsOptions)); // 옵션을 추가한 CORS 미들웨어 추가
 app.use(cors()); // CORS 미들웨어 추가
 
-// Redis Client
-const client = redis.createClient({ url: process.env.REDIS_HOST_URL });
-
-(async () => {
-    await client.connect();
-})();
-
-client.on('connect', () => console.log('::> ✅ Redis Client Connected'));
-client.on('error', (err:any) => console.log('<:: Redis Client Error', err));
-
 // Use Session with Redis
-app.use(session({
-  store: new redisStore({
-    client: client,
-    logErrors: true
-  }),
-  secret: process.env.SESSION_SECRET,
-  resave: false,
-  saveUninitialized: true,
-  cookie: {
-    maxAge: 2000 * 60 * 60 // 쿠키 유효기간 2시간
-  }
-}));
+// app.use(session({
+//   store: new redisStore({
+//     client: client,
+//     logErrors: true
+//   }),
+//   secret: process.env.SESSION_SECRET,
+//   resave: false,
+//   saveUninitialized: true,
+//   cookie: {
+//     maxAge: 2000 * 60 * 60 // 쿠키 유효기간 2시간
+//   }
+// }));
 
 // setup
 app.use(express.json());

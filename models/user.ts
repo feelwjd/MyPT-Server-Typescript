@@ -9,6 +9,7 @@ interface UserAttributes {
     nickname : string,
     userid : string,
     userpw : string,
+    salt : string,
     age : number,
     address : string,
     name : string,
@@ -23,6 +24,7 @@ export class User extends Model<UserAttributes> {
     private _nickname! : string;
     private _userid! : string;
     private _userpw! : string;
+    private _salt! : string;
     private _age! : number;
     private _address! : string;
     private _name! : string;
@@ -66,6 +68,14 @@ export class User extends Model<UserAttributes> {
 
     set userpw(value: string) {
         !!value ? this._userpw = value : new Error('Pw is Empty');
+    }
+
+    get salt(): string {
+        return this._salt;
+    }
+
+    set salt(value: string) {
+        !!value ? this._salt = value : new Error('Hash is Empty');
     }
 
     get age(): number {
@@ -150,7 +160,11 @@ User.init(
             unique: true
         },
         userpw : {
-            type: DataTypes.STRING(64),
+            type: DataTypes.STRING(256),
+            allowNull: false
+        },
+        salt : {
+            type: DataTypes.STRING(256),
             allowNull: false
         },
         age : {

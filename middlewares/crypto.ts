@@ -1,11 +1,30 @@
 import crypto from 'crypto';
 import dotenv from 'dotenv';
+import util from 'util';
 dotenv.config();
 const INTERFACE_NAME = "CRTO";
 const algorithm = 'aes-192-cbc';
 const KEY = crypto.scryptSync(process.env.MYPASSWD!, 'salt', 24);
+const randomBytesPromise = util.promisify(crypto.randomBytes);
+const pbkdf2Promise = util.promisify(crypto.pbkdf2);
 
+const createSalt = async () => {
+    const buf = await randomBytesPromise(64);
+    return buf.toString('base64');
+};
 
+export const createHashedPassword = async (password: string) => {
+    const salt = await createSalt();
+    const key = await pbkdf2Promise(password, salt, 100000, 64, 'sha512');
+    const hashedPassword = key.toString('base64');
+    return { salt, hashedPassword };
+};
+
+export const checkPassword = async (password: string, salt: string, hashedPassword: string) => {
+    const key = await pbkdf2Promise(password, salt, 100000, 64, 'sha512');
+    const hashedPassword2 = key.toString('base64');
+    return hashedPassword === hashedPassword2;
+};
 
 export function encrypt(text: string) {
     if (text.length < 16) {

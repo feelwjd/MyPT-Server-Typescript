@@ -10,7 +10,7 @@ const TOKEN_INVALID = -2;
 export = {
     sign: async (user: User) => {
       const payload = {
-        id: user.id,
+        id: user.userid,
         username: user.name,
       };
       const result = {
