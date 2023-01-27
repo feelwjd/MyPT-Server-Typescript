@@ -126,9 +126,124 @@ export = {
         }
     },
     signdelete : async (req: Request, res: Response) => {
-
+        const {userid} = req.body;
+        if(!userid) {
+            return res
+                .status(statusCode.BAD_REQUEST)
+                .send(message.fail(statusCode.BAD_REQUEST, "잘못된 접근입니다."));
+        }else{
+            try{
+                // 회원탈퇴 처리
+                const jwt = client.get(userid);
+                jwtService.verify(jwt);
+                if(jwt){
+                    client.del(userid);
+                    jwtService.destroy(jwt);
+                    await User.destroy({
+                        where : { userid : userid }
+                    });
+                    return res
+                        .status(statusCode.OK)
+                        .send(message.success(statusCode.OK, "회원탈퇴 성공", {isSigned: false}));
+                }else{
+                    return res
+                        .status(statusCode.NOT_FOUND)
+                        .send(message.fail(statusCode.NOT_FOUND, "로그인되어 있지 않습니다."));
+                }
+            }catch(err){
+                console.error(err);
+                return res
+                    .status(statusCode.INTERNAL_SERVER_ERROR)
+                    .send(message.fail(statusCode.INTERNAL_SERVER_ERROR, "서버 오류"));
+            }
+        }
     },
     signupdate : async (req: Request, res: Response) => {
-
+        const { userid } = req.body;
+        if(!userid) {
+            return res
+                .status(statusCode.BAD_REQUEST)
+                .send(message.fail(statusCode.BAD_REQUEST, "잘못된 접근입니다."));
+        }else{
+            try{
+                // 회원정보 수정 처리
+                const jwt = client.get(userid);
+                jwtService.verify(jwt);
+                if(jwt){
+                    await User.update({
+                        nickname : req.body.nickname,
+                        age : req.body.age,
+                        address : req.body.address,
+                        name : req.body.name,
+                        profileimage : req.body.profileimage,
+                        height : req.body.height,
+                        weight : req.body.weight
+                    }, {
+                        where : { userid : userid }
+                    });
+                    const userinfo = await User.findOne({
+                        where : { userid : userid }
+                    });
+                    return res
+                        .status(statusCode.OK)
+                        .send(message.success(statusCode.OK, "회원정보 수정 성공", {userdata: userinfo}));
+                }else{
+                    return res
+                        .status(statusCode.NOT_FOUND)
+                        .send(message.fail(statusCode.NOT_FOUND, "로그인되어 있지 않습니다."));
+                }
+            }catch(err){
+                console.error(err);
+                return res
+                    .status(statusCode.INTERNAL_SERVER_ERROR)
+                    .send(message.fail(statusCode.INTERNAL_SERVER_ERROR, "서버 오류"));
+            }
+        }
+    },
+    changePassword : async (req: Request, res: Response) => {
+        const { userid, userpw } = req.body;
+        if(!userid || !userpw) {
+            return res
+                .status(statusCode.BAD_REQUEST)
+                .send(message.fail(statusCode.BAD_REQUEST, "잘못된 접근입니다."));
+        }else{
+            try{
+                // 비밀번호 변경 처리
+                const jwt = client.get(userid);
+                jwtService.verify(jwt);
+                if(jwt){
+                    // 비밀번호 확인
+                    const encryptedPw = createHashedPassword(userpw);
+                    const user = await User.findOne({
+                        where : { userid : userid }
+                    });
+                    const checkPw = await checkPassword(userpw, user!.salt, user!.userpw);
+                    if(!checkPw){
+                        return res
+                            .status(statusCode.BAD_REQUEST)
+                            .send(message.fail(statusCode.BAD_REQUEST, "비밀번호가 일치하지 않습니다."));
+                    }else{
+                        await User.update({
+                            userpw : (await encryptedPw).hashedPassword,
+                            salt : (await encryptedPw).salt
+                        }, {
+                            where : { userid : userid }
+                        });
+                        return res
+                            .status(statusCode.OK)
+                            .send(message.success(statusCode.OK, "비밀번호 변경 성공", {isSigned: true}));
+                    }
+                }else{
+                    return res
+                        .status(statusCode.NOT_FOUND)
+                        .send(message.fail(statusCode.NOT_FOUND, "로그인되어 있지 않습니다."));
+                }
+            }catch(err){
+                console.error(err);
+                return res
+                    .status(statusCode.INTERNAL_SERVER_ERROR)
+                    .send(message.fail(statusCode.INTERNAL_SERVER_ERROR, "서버 오류"));
+            }
+        }
     }
 }
