@@ -4,6 +4,10 @@ const mainpageRouter = express.Router();
 
 mainpageRouter.post('/calender', mainpageController.calender);
 
-mainpageRouter.post('/todolist', mainpageController.todolist);
+mainpageRouter.post('/dashboard', mainpageController.dashboard);
+
+mainpageRouter.post('/community', mainpageController.community);
+
+mainpageRouter.post('/mypage', mainpageController.mypage);
 
 module.exports = mainpageRouter;
