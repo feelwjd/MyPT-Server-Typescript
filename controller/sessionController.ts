@@ -1,8 +1,10 @@
 import { Request, Response, NextFunction } from "express";
+import { User } from "../models/user";
+const client = require("../middleware/redis");
 
 
 export = {
-    check :async (req: Request, res: Response, next: NextFunction) => {
+    verifySession :async (req: Request, res: Response, next: NextFunction) => {
         
     }
 }
