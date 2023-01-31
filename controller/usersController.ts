@@ -4,6 +4,8 @@ import statusCode from "../middlewares/statusCode";
 import { createHashedPassword, checkPassword } from "../middlewares/crypto";
 import jwtService from "../middlewares/jwtService";
 import message from "../middlewares/message";
+import * as fs from "fs";
+import _ from "lodash";
 const client = require('../middlewares/redis');
 
 export = {
@@ -245,5 +247,76 @@ export = {
                     .send(message.fail(statusCode.INTERNAL_SERVER_ERROR, "서버 오류"));
             }
         }
-    }
+    },
+    checkId : async (req: Request, res: Response) => {
+        const { userid } = req.body;
+        if(!userid) {
+            return res
+                .status(statusCode.BAD_REQUEST)
+                .send(message.fail(statusCode.BAD_REQUEST, "잘못된 접근입니다."));
+        }else{
+            await User.findOne({
+                where : { userid : userid }
+            }).then((user) => {
+                if(user){
+                    return res
+                        .status(statusCode.OK)
+                        .send(message.success(statusCode.OK, "사용 가능한 아이디입니다.", {isAvailable: true}));
+                }else{
+                    return res
+                        .status(statusCode.OK)
+                        .send(message.success(statusCode.OK, "사용 불가능한 아이디입니다.", {isAvailable: false}));
+                }
+            }).catch((err) => {
+                console.error(err);
+                return res
+                    .status(statusCode.INTERNAL_SERVER_ERROR)
+                    .send(message.fail(statusCode.INTERNAL_SERVER_ERROR, "서버 오류"));
+            });
+        }
+    },
+    checkNickname : async (req: Request, res: Response) => {
+        const { nickname } = req.body;
+        if(!nickname) {
+            return res
+                .status(statusCode.BAD_REQUEST)
+                .send(message.fail(statusCode.BAD_REQUEST, "잘못된 접근입니다."));
+        }else{
+            await User.findOne({
+                where : { nickname : nickname }
+            }).then((user) => {
+                if(user){
+                    return res
+                        .status(statusCode.OK)
+                        .send(message.success(statusCode.OK, "사용 가능한 닉네임입니다.", {isAvailable: true}));
+                }else{
+                    return res
+                        .status(statusCode.OK)
+                        .send(message.success(statusCode.OK, "사용 불가능한 닉네임입니다.", {isAvailable: false}));
+                }
+            }).catch((err) => {
+                console.error(err);
+                return res
+                    .status(statusCode.INTERNAL_SERVER_ERROR)
+                    .send(message.fail(statusCode.INTERNAL_SERVER_ERROR, "서버 오류"));
+            });
+        }
+    },
+    createNickname : async (req: Request, res: Response) => {
+        //닉네임 자동 생성기
+        fs.readFile("./assets/word.txt", 'utf8', (err, data) => {
+            if(!data){
+                return res
+                    .status(statusCode.INTERNAL_SERVER_ERROR)
+                    .send(message.fail(statusCode.INTERNAL_SERVER_ERROR, "서버 오류"));
+            }else{
+                let word = (data).split(',');
+                const part = ['유산소', '하체', '코어', '등', '가슴', '어깨', '삼두', '이두', '전완근'];
+                let nickname = word[Math.floor(Math.random() * word.length)]+'한 '+part[Math.floor(Math.random() * part.length)];
+                return res
+                    .status(statusCode.OK)
+                    .send(message.success(statusCode.OK, "닉네임 생성 성공", {nickname: nickname}));
+            }
+        });
+    },
 }
