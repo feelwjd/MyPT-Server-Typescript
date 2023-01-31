@@ -37,8 +37,5 @@ export = {
         }
       }
       return decoded;
-    },
-    destroy : async (token: any) => {
-      blacklist.blacklist(token);
     }
   };

@@ -106,18 +106,17 @@ export = {
         }else{
             try{
                 // 로그아웃 처리
-                const jwt = client.get(userid);
-                jwtService.verify(jwt);
-                if(jwt){
+                const jwt = await client.get(userid);
+                const verify = await jwtService.verify(jwt);
+                if(verify === -2||verify === -3){
+                    return res
+                        .status(statusCode.NOT_FOUND)
+                        .send(message.fail(statusCode.UNAUTHORIZED, "로그인되어 있지 않습니다."));
+                }else{
                     client.del(userid);
-                    jwtService.destroy(jwt);
                     return res
                         .status(statusCode.OK)
                         .send(message.success(statusCode.OK, "로그아웃 성공", {isSigned: false}));
-                }else{
-                    return res
-                        .status(statusCode.NOT_FOUND)
-                        .send(message.fail(statusCode.NOT_FOUND, "로그인되어 있지 않습니다."));
                 }
             }catch(err){
                 console.error(err);
@@ -136,21 +135,20 @@ export = {
         }else{
             try{
                 // 회원탈퇴 처리
-                const jwt = client.get(userid);
-                jwtService.verify(jwt);
-                if(jwt){
+                const jwt = await client.get(userid);
+                const verify = await jwtService.verify(jwt);
+                if(verify === -2||verify === -3){
+                    return res
+                        .status(statusCode.NOT_FOUND)
+                        .send(message.fail(statusCode.UNAUTHORIZED, "로그인되어 있지 않습니다."));
+                }else{
                     client.del(userid);
-                    jwtService.destroy(jwt);
                     await User.destroy({
                         where : { userid : userid }
                     });
                     return res
                         .status(statusCode.OK)
                         .send(message.success(statusCode.OK, "회원탈퇴 성공", {isSigned: false}));
-                }else{
-                    return res
-                        .status(statusCode.NOT_FOUND)
-                        .send(message.fail(statusCode.NOT_FOUND, "로그인되어 있지 않습니다."));
                 }
             }catch(err){
                 console.error(err);
